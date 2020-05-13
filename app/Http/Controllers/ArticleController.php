@@ -16,4 +16,12 @@ class ArticleController extends Controller
 
         return view('articles.index', ['articles' => $articles]);
     }
+
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function create()
+    {
+        return view('articles.create');
+    }
 }
