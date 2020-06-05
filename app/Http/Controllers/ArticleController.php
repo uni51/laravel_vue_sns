@@ -38,4 +38,13 @@ class ArticleController extends Controller
         $article->save();
         return redirect()->route('articles.index');
     }
+
+    /**
+     * @param Article $article
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function edit(Article $article)
+    {
+        return view('articles.edit', ['article' => $article]);
+    }
 }
