@@ -47,4 +47,27 @@ class ArticleController extends Controller
     {
         return view('articles.edit', ['article' => $article]);
     }
+
+    /**
+     * @param ArticleRequest $request
+     * @param Article $article
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(ArticleRequest $request, Article $article)
+    {
+        // モデルのfillメソッドの戻り値はそのモデル自身なので、そのままsaveメソッドを繋げて使うことができます。
+        $article->fill($request->all())->save();
+        return redirect()->route('articles.index');
+    }
+
+    /**
+     * @param Article $article
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
+     */
+    public function destroy(Article $article)
+    {
+        $article->delete();
+        return redirect()->route('articles.index');
+    }
 }
