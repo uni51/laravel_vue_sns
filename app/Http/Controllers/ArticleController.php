@@ -9,6 +9,15 @@ use Illuminate\Http\Request;
 class ArticleController extends Controller
 {
     /**
+     * ArticleController constructor.
+     * Articleポリシーをリソースコントローラーに適用する
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(Article::class, 'article');
+    }
+
+    /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
