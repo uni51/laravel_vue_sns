@@ -70,4 +70,13 @@ class ArticleController extends Controller
         $article->delete();
         return redirect()->route('articles.index');
     }
+
+    /**
+     * @param Article $article
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function show(Article $article)
+    {
+        return view('articles.show', ['article' => $article]);
+    }
 }
