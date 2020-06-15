@@ -39,6 +39,7 @@ class Article extends Model
     public function isLikedBy(?User $user): bool
     {
         return $user
+            // idは、usersテーブルのid
             ? (bool)$this->likes->where('id', $user->id)->count()
             : false;
     }
