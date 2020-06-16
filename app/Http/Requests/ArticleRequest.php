@@ -45,6 +45,10 @@ class ArticleRequest extends FormRequest
     }
 
 
+    /**
+     * passedValidationメソッドは、
+     * フォームリクエストのバリデーションが成功した後に自動的に呼ばれるメソッドです。
+     */
     public function passedValidation()
     {
         // json_decodeで連想配列形式に変換したものを、collect関数を使ってコレクションに変換している

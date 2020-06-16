@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Article;
+use App\Tag;
 use App\Http\Requests\ArticleRequest;
 use Illuminate\Http\Request;
 
@@ -45,6 +46,18 @@ class ArticleController extends Controller
         $article->fill($request->all());
         $article->user_id = $request->user()->id;
         $article->save();
+
+        // $request->tagsの内容は、前パートでフォームリクエスト(ArticleFormRequest)に追加した
+        // passedValidationメソッドによって、コレクションになっています。
+        // そのため、コレクションメソッドであるeachメソッドを使うことができます。
+        $request->tags->each(function ($tagName) use ($article) { // use ($article)とあるのは、クロージャの中の処理で変数$articleを使うためです
+            // firstOrCreateメソッドは、引数として渡した「カラム名と値のペア」を持つレコードがテーブルに存在するかどうかを探し、
+            // もし存在すればそのモデルを返します。
+            $tag = Tag::firstOrCreate(['name' => $tagName]);
+            // 記事とタグの紐付け(article_tagテーブルへのレコードの保存)が行われます。
+            $article->tags()->attach($tag);
+        });
+
         return redirect()->route('articles.index');
     }
 
