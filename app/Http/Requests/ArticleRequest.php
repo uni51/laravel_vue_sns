@@ -27,6 +27,8 @@ class ArticleRequest extends FormRequest
         return [
             'title' => 'required|max:50',
             'body' => 'required|max:500',
+            // 半角スペースが含まれないのと、/がないことをチェックする
+            'tags' => 'json|regex:/^(?!.*\s).+$/u|regex:/^(?!.*\/).*$/u',
         ];
     }
 
@@ -38,6 +40,18 @@ class ArticleRequest extends FormRequest
         return [
             'title' => 'タイトル',
             'body' => '本文',
+            'tags' => 'タグ',
         ];
+    }
+
+
+    public function passedValidation()
+    {
+        // json_decodeで連想配列形式に変換したものを、collect関数を使ってコレクションに変換している
+        $this->tags = collect(json_decode($this->tags))
+            ->slice(0, 5)
+            ->map(function ($requestTag) {
+                return $requestTag->text;
+            });
     }
 }
