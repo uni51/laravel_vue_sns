@@ -57,4 +57,15 @@ class Article extends Model
         //（この記事にいいねをしたユーザーの総数）を数えます
         return $this->likes->count();
     }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function tags(): BelongsToMany
+    {
+        // 記事モデルとタグモデルの関係は多対多となります。そのため、belongsToManyメソッドを使用します。
+        // 今回は中間テーブルの名前がarticle_tagといった2つのモデル名の単数形をアルファベット順に結合した名前ですので、
+        // 第二引数は省略可能となっています。
+        return $this->belongsToMany('App\Tag')->withTimestamps();
+    }
 }
