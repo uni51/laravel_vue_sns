@@ -67,7 +67,15 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
-        return view('articles.edit', ['article' => $article]);
+        $tagNames = $article->tags->map(function ($tag) {
+            // Vue Tags Inputでは、タグ名に対し、以下のようにtextというキーが付いている必要があります。
+            return ['text' => $tag->name];
+        });
+
+        return view('articles.edit', [
+            'article' => $article,
+            'tagNames' => $tagNames,
+        ]);
     }
 
     /**
@@ -79,6 +87,20 @@ class ArticleController extends Controller
     {
         // モデルのfillメソッドの戻り値はそのモデル自身なので、そのままsaveメソッドを繋げて使うことができます。
         $article->fill($request->all())->save();
+        
+        // 更新対象の記事とタグの紐付けをいったん全削除
+        $article->tags()->detach();
+        // $request->tagsの内容は、前パートでフォームリクエスト(ArticleFormRequest)に追加した
+        // passedValidationメソッドによって、コレクションになっています。
+        // そのため、コレクションメソッドであるeachメソッドを使うことができます。
+        $request->tags->each(function ($tagName) use ($article) { // use ($article)とあるのは、クロージャの中の処理で変数$articleを使うためです
+            // firstOrCreateメソッドは、引数として渡した「カラム名と値のペア」を持つレコードがテーブルに存在するかどうかを探し、
+            // もし存在すればそのモデルを返します。
+            $tag = Tag::firstOrCreate(['name' => $tagName]);
+            // 記事とタグの紐付け(article_tagテーブルへのレコードの保存)が行われます。
+            $article->tags()->attach($tag);
+        });
+
         return redirect()->route('articles.index');
     }
 
