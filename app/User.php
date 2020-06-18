@@ -57,6 +57,14 @@ class User extends Authenticatable
     }
 
     /**
+     * @return BelongsToMany
+     */
+    public function followings(): BelongsToMany
+    {
+        return $this->belongsToMany('App\User', 'follows', 'follower_id', 'followee_id')->withTimestamps();
+    }
+
+    /**
      * @param User|null $user
      * @return bool
      */
