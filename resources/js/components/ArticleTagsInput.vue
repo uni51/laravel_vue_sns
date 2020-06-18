@@ -51,6 +51,7 @@
     },
   };
 </script>
+
 <style lang="css" scoped>
   .vue-tags-input {
     max-width: inherit;
