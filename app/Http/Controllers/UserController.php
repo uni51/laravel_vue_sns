@@ -24,6 +24,22 @@ class UserController extends Controller
     }
 
     /**
+     * @param string $name
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function likes(string $name)
+    {
+        $user = User::where('name', $name)->first();
+
+        $articles = $user->likes->sortByDesc('created_at');
+
+        return view('users.likes', [
+            'user' => $user,
+            'articles' => $articles,
+        ]);
+    }
+
+    /**
      * @param Request $request
      * @param string $name
      * @return array|void
