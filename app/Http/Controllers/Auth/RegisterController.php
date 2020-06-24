@@ -91,4 +91,32 @@ class RegisterController extends Controller
             'token' => $token,
         ]);
     }
+
+    /**
+     * @param Request $request
+     * @param string $provider
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function registerProviderUser(Request $request, string $provider)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'alpha_num', 'min:3', 'max:16', 'unique:users'],
+            'token' => ['required', 'string'],
+        ]);
+
+        $token = $request->token;
+
+        $providerUser = Socialite::driver($provider)->userFromToken($token);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $providerUser->getEmail(),
+            'password' => null,
+        ]);
+
+        $this->guard()->login($user, true);
+
+        return $this->registered($request, $user)
+            ?: redirect($this->redirectPath());
+    }
 }
