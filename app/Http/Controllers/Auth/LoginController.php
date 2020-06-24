@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
@@ -39,8 +41,33 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    /**
+     * @param string $provider
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
     public function redirectToProvider(string $provider)
     {
         return Socialite::driver($provider)->redirect();
+    }
+
+    /**
+     * @param Request $request
+     * @param string $provider
+     * @return \Illuminate\Http\Response
+     */
+    public function handleProviderCallback(Request $request, string $provider)
+    {
+        $providerUser = Socialite::driver($provider)->stateless()->user();
+
+        $user = User::where('email', $providerUser->getEmail())->first();
+
+        if ($user) {
+            // ユーザーをログイン状態にしています。
+            $this->guard()->login($user, true);
+            // ログイン後の画面(記事一覧画面)へ遷移するようにしています。
+            return $this->sendLoginResponse($request);
+        }
+
+        // $userがnullの場合の処理は次のパートでここに書く予定
     }
 }
