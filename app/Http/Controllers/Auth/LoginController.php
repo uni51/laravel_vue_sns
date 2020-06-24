@@ -53,7 +53,7 @@ class LoginController extends Controller
     /**
      * @param Request $request
      * @param string $provider
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
     public function handleProviderCallback(Request $request, string $provider)
     {
@@ -68,6 +68,11 @@ class LoginController extends Controller
             return $this->sendLoginResponse($request);
         }
 
-        // $userがnullの場合の処理は次のパートでここに書く予定
+        // if文の条件に該当しなかった時のみ
+        return redirect()->route('register.{provider}', [
+            'provider' => $provider,
+            'email' => $providerUser->getEmail(),
+            'token' => $providerUser->token,
+        ]);
     }
 }
